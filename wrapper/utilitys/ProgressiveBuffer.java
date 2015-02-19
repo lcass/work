@@ -27,9 +27,14 @@ public class ProgressiveBuffer {
 	private boolean texturised = false;
 	private int setsize = 0;
 	private int limit = 0;
-	public ProgressiveBuffer(Vertex2d[] data, boolean texturised) {
-		this.texturised = texturised;
+	public boolean threed = false;
 
+	public ProgressiveBuffer(Vertex2d[] data, boolean texturised, boolean threed) {
+		this.texturised = texturised;
+		this.threed = threed;
+		if (texturised) {
+			threed = false;
+		}
 		if (data != null) {
 			setsize = data.length * 2;
 			this.data = BufferUtils.createFloatBuffer(data.length * 2);
@@ -55,11 +60,50 @@ public class ProgressiveBuffer {
 
 	}
 
+	public ProgressiveBuffer(Vertex3d[] data, boolean texturised, boolean threed) {
+		this.texturised = texturised;
+		this.threed = threed;
+		if (texturised) {
+			threed = false;
+		}
+		if (data != null) {
+
+			if (!texturised) {
+				setsize = data.length * 3;
+				this.data = BufferUtils.createFloatBuffer(data.length * 3);
+				this.temp = BufferUtils.createFloatBuffer(data.length * 3);
+				for (int i = 0; i < data.length; i++) {
+					this.data.put(data[i].x);
+					this.data.put(data[i].y);
+					this.data.put(data[i].z);
+					limit += 3;
+				}
+			} else {
+				setsize = data.length * 2;
+				this.data = BufferUtils.createFloatBuffer(data.length * 2);
+				this.temp = BufferUtils.createFloatBuffer(data.length * 2);
+				for (int i = 0; i < data.length; i++) {
+					this.data.put(data[i].u);
+					this.data.put(data[i].v);
+					limit += 2;
+				}
+			}
+		} else {
+			this.data = BufferUtils.createFloatBuffer(0);
+			this.temp = BufferUtils.createFloatBuffer(0);
+		}
+
+	}
+
 	public void create(Vertex2d[] data, boolean texturised) {
+		if (threed && !texturised) {
+			System.out.println("This is a 3d progressive buffer!");
+			return;
+		}
 		this.texturised = texturised;
 		this.data = BufferUtils.createFloatBuffer(data.length * 2);
 		this.temp = BufferUtils.createFloatBuffer(data.length * 2);
-		if (texturised) {
+		if (!texturised) {
 			for (int i = 0; i < data.length; i++) {
 				this.data.put(data[i].x);
 				this.data.put(data[i].y);
@@ -74,7 +118,36 @@ public class ProgressiveBuffer {
 		}
 	}
 
+	public void create(Vertex3d[] data, boolean texturised) {
+		if (!threed && !texturised) {
+			System.out.println("This is a 2d progressive_buffer!");
+			return;
+		}
+		this.texturised = texturised;
+
+		if (!texturised) {
+			this.data = BufferUtils.createFloatBuffer(data.length * 3);
+			this.temp = BufferUtils.createFloatBuffer(data.length * 3);
+			for (int i = 0; i < data.length; i++) {
+				this.data.put(data[i].x);
+				this.data.put(data[i].y);
+				this.data.put(data[i].z);
+				limit += 3;
+			}
+		} else {
+			for (int i = 0; i < data.length; i++) {
+				this.data.put(data[i].u);
+				this.data.put(data[i].v);
+				limit += 2;
+			}
+		}
+	}
+
 	public void extend(Vertex2d[] data) {
+		if (threed) {
+			System.out.println("This is a 3d progressive_buffer!");
+			return;
+		}
 		float[] temp = new float[setsize];
 		this.data.rewind();
 		this.data.get(temp);
@@ -101,56 +174,141 @@ public class ProgressiveBuffer {
 		this.data.rewind();
 	}
 
-	public void extend(ProgressiveBuffer indata) {
+	public void extend(Vertex3d[] data) {
+		if (!threed) {
+			System.out.println("This is a 2d progressive_buffer!");
+			return;
+		}
 		float[] temp = new float[setsize];
-		FloatBuffer indatanew = indata.get_data();
-		Vertex2d[] data = new Vertex2d[indata.get_data().capacity() / 2];
-		indatanew.rewind();
-		for (int i = 0; i < indata.get_data().capacity() / 2; i++) {
-			float x = indatanew.get();
-			float y = indatanew.get();
-
-			data[i] = new Vertex2d(x, y);
-			limit += 2;
-		}
 		this.data.rewind();
-
 		this.data.get(temp);
+		float[] currtemp;
 
-		float[] currtemp = new float[temp.length + (data.length * 2)];
-		for (int i = 0; i < temp.length; i++) {
-			currtemp[i] = temp[i];
-		}
-	
-			for (int i = 0; i < data.length * 2; i += 2) {
-				currtemp[i + temp.length] = data[i / 2].x;
-				currtemp[i + temp.length + 1] = data[i / 2].y;
+		if (!texturised) {
+			currtemp = new float[temp.length + (data.length * 3)];
+			for (int i = 0; i < temp.length; i++) {
+				currtemp[i] = temp[i];
 			}
-		
+			for (int i = 0; i < data.length * 3; i += 3) {
+				currtemp[i + temp.length] = data[i / 3].x;
+				currtemp[i + temp.length + 1] = data[i / 3].y;
+				currtemp[i + temp.length + 2] = data[i / 3].z;
+				limit += 3;
+			}
+		} else {
+			currtemp = new float[temp.length + (data.length * 2)];
+			for (int i = 0; i < temp.length; i++) {
+				currtemp[i] = temp[i];
+			}
+			for (int i = 0; i < data.length * 2; i += 2) {
+				currtemp[i + temp.length] = data[i / 2].u;
+				currtemp[i + 1 + temp.length] = data[i / 2].v;
+				limit += 2;
+			}
+		}
 		this.data = BufferUtils.createFloatBuffer(currtemp.length);
 		setsize = currtemp.length;
 		this.data.put(currtemp);
 		this.data.rewind();
-		indatanew.clear();
-		indatanew = null;
-		data = null;
-		temp = null;
+	}
 
+	public void extend(ProgressiveBuffer indata) {
+
+		if (!indata.threed || indata.texturised) {
+			float[] temp = new float[setsize];
+			FloatBuffer indatanew = indata.get_data();
+			Vertex2d[] data = new Vertex2d[indata.get_data().capacity() / 2];
+			indatanew.rewind();
+			for (int i = 0; i < indata.get_data().capacity() / 2; i++) {
+				float x = indatanew.get();
+				float y = indatanew.get();
+
+				data[i] = new Vertex2d(x, y);
+				limit += 2;
+			}
+			this.data.rewind();
+
+			this.data.get(temp);
+
+			float[] currtemp = new float[temp.length + (data.length * 2)];
+			for (int i = 0; i < temp.length; i++) {
+				currtemp[i] = temp[i];
+			}
+
+			for (int i = 0; i < data.length * 2; i += 2) {
+				currtemp[i + temp.length] = data[i / 2].x;
+				currtemp[i + temp.length + 1] = data[i / 2].y;
+			}
+
+			this.data = BufferUtils.createFloatBuffer(currtemp.length);
+			setsize = currtemp.length;
+			this.data.put(currtemp);
+			this.data.rewind();
+			indatanew.clear();
+			indatanew = null;
+			data = null;
+			temp = null;
+		} else {
+			float[] temp = new float[setsize];
+			FloatBuffer indatanew = indata.get_data();
+			Vertex3d[] data = new Vertex3d[indata.get_data().capacity() / 3];
+			indatanew.rewind();
+			for (int i = 0; i < indata.get_data().capacity() / 3; i++) {
+				float x = indatanew.get();
+				float y = indatanew.get();
+				float z = indatanew.get();
+
+				data[i] = new Vertex3d(x, y, z);
+				limit += 3;
+			}
+			this.data.rewind();
+
+			this.data.get(temp);
+
+			float[] currtemp = new float[temp.length + (data.length * 3)];
+			for (int i = 0; i < temp.length; i++) {
+				currtemp[i] = temp[i];
+			}
+
+			for (int i = 0; i < data.length * 3; i += 3) {
+				currtemp[i + temp.length] = data[i / 3].x;
+				currtemp[i + temp.length + 1] = data[i / 3].y;
+				currtemp[i + temp.length + 2] = data[i / 3].z;
+			}
+
+			this.data = BufferUtils.createFloatBuffer(currtemp.length);
+			setsize = currtemp.length;
+			this.data.put(currtemp);
+			this.data.rewind();
+			indatanew.clear();
+			indatanew = null;
+			data = null;
+			temp = null;
+		}
 	}
 
 	public FloatBuffer get_data() {
-		
+
 		return data;
 	}
-	public void rewind(){
+
+	public void rewind() {
 		data.rewind();
 	}
 
 	public void index_put(int index, ProgressiveBuffer indata) {
+		if (indata.threed && !threed) {
+			System.out.println("This is a 2d progressive_buffer!");
+			return;
+		}
+		if (!indata.threed && threed) {
+			System.out.println("This is a 3d progressive_buffer!");
+			return;
+		}
 		FloatBuffer temp = indata.get_data();
 		temp.rewind();
 		for (int i = 0; i < temp.capacity(); i++) {
-			
+
 			this.data.put(index + i, temp.get());
 		}
 	}
@@ -168,7 +326,8 @@ public class ProgressiveBuffer {
 
 		texturised = false;
 	}
-	public int get_limit(){
+
+	public int get_limit() {
 		return limit;
 	}
 }

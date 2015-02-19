@@ -29,21 +29,25 @@ import wrapper.graphics.Shader;
 import wrapper.graphics.texture.Texture;
 import wrapper.utilitys.ProgressiveBuffer;
 import wrapper.utilitys.Vertex2d;
+import wrapper.utilitys.Vertex3d;
 
 public class Vbo {
 	public int vertid, texid, texcoordid, vertcount;
 	private Texture tex;
-	private Vertex2d transformation;
+	private Vertex3d transformation;
 	private FloatBuffer vertex, texture;
 	private Shader shader;
-	private int width, height;//use these for calculating rotation , convert the point to pixel coordinate then rotate then back.
+	private Vertex3d rotate_centre = new Vertex3d(0,0,1);
+	private int width, height;// use these for calculating rotation , convert
+								// the point to pixel coordinate then rotate
+								// then back.
 	private boolean tick = true;
-	private Random r;
+
 	private int maxlength = 0;
 	private int vertexattrib, textureattrib;
 
 	public Vbo(int width, int height, Shader shader) {
-		transformation = new Vertex2d(0, 0, 1, 0);
+		transformation = new Vertex3d(0, 0, 1);
 		this.shader = shader;
 		if (shader == null) {
 			System.out.println("Null shader , Vbo will encounter errors!");
@@ -79,27 +83,52 @@ public class Vbo {
 
 	}
 
-	
-
-	public void create(ProgressiveBuffer[] b) {// coordinates are NOT bound by
-												// this
-
-		vertex = b[0].get_data();
-		texture = b[1].get_data();
-		vertcount = b[0].get_data().limit();
+	public void create(Vertex3d[] coordinates) {
+		vertex = BufferUtils.createFloatBuffer(coordinates.length * 3);
+		texture = BufferUtils.createFloatBuffer(coordinates.length * 2);
+		vertcount = coordinates.length;
 		maxlength = vertcount;
-		vertex.rewind();
-		texture.rewind();
+		for (int i = 0; i < coordinates.length; i++) {
+			vertex.put(coordinates[i].x);
+			vertex.put(coordinates[i].y);
+			vertex.put(coordinates[i].z);
+			texture.put(coordinates[i].u);
+			texture.put(coordinates[i].v);
+		}
 		vertid = GL15.glGenBuffers();
 		texcoordid = GL15.glGenBuffers();
+		vertex.rewind();
+		texture.rewind();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertex, GL15.GL_DYNAMIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texcoordid);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texture, GL15.GL_DYNAMIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
 	}
 
-	public void create(int size) {// coordinates are NOT bound by this
+	public void create(ProgressiveBuffer[] b) {// coordinates are NOT bound by
+												// this
+		
+			vertex = b[0].get_data();
+			texture = b[1].get_data();
+			vertcount = b[0].get_data().limit();
+			maxlength = vertcount;
+			vertex.rewind();
+			texture.rewind();
+			vertid = GL15.glGenBuffers();
+			texcoordid = GL15.glGenBuffers();
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertex,
+					GL15.GL_DYNAMIC_DRAW);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texcoordid);
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texture,
+					GL15.GL_DYNAMIC_DRAW);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		
+	}
+
+	public void create(int size) {
 		maxlength = size;
 		vertex = BufferUtils.createFloatBuffer(size);
 		texture = BufferUtils.createFloatBuffer(size);
@@ -138,14 +167,27 @@ public class Vbo {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertex);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texcoordid);
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, texture);// doesnt
-																// reassing
-																// meaning its
-																// more
-																// efficient,
-																// only for
-																// removing
-																// objects
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, texture);
+	}
+	public void edit_data(Vertex3d[] coordinates) {
+		
+		vertex = BufferUtils.createFloatBuffer(coordinates.length * 3);
+		texture = BufferUtils.createFloatBuffer(coordinates.length * 2);
+		vertcount = coordinates.length;
+		for (int i = 0; i < coordinates.length; i++) {
+			vertex.put(coordinates[i].x);
+			vertex.put(coordinates[i].y);
+			vertex.put(coordinates[i].z);
+			texture.put(coordinates[i].u);
+			texture.put(coordinates[i].v);
+		}
+		vertex.rewind();
+		texture.rewind();
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertex);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texcoordid);
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, texture);
 	}
 
 	public void edit_data(ProgressiveBuffer[] b) {
@@ -194,7 +236,7 @@ public class Vbo {
 	}
 
 	public void rebind(int size) {
-		reset();
+	
 		FloatBuffer temp = BufferUtils.createFloatBuffer(size);
 		FloatBuffer temp_tex = BufferUtils.createFloatBuffer(size);
 		vertex.rewind();
@@ -215,7 +257,23 @@ public class Vbo {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
 	}
-
+	public void rebind_empty(int size) {
+	
+		FloatBuffer temp = BufferUtils.createFloatBuffer(size);
+		FloatBuffer temp_tex = BufferUtils.createFloatBuffer(size);
+		vertex.rewind();
+		maxlength = size;
+		vertcount = 0;
+		texture.rewind();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);// clear and generate
+														// two new memory
+														// locations with a
+														// large amount of space
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, temp, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, temp_tex, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+	}
 	public void reset_count() {
 		vertcount = 0;
 	}
@@ -229,27 +287,26 @@ public class Vbo {
 			shader.dispose();
 		}
 	}
-
-	public void reset() {
-		if (vertid != 0) {
-			GL15.glDeleteBuffers(vertid);
-			GL15.glDeleteBuffers(texcoordid);
-		}
+	public void set_rotation_point(Vertex3d point){
+		rotate_centre = point;
 	}
+
+
 
 	public void attach_shader(Shader shader) {
 		this.shader = shader;
 	}
 
-	public void translate(Vertex2d position) {
+	public void translate(Vertex3d position) {
 		transformation.x += position.x;
 		transformation.y += position.y;
+		transformation.z += position.z;
 
 	}
 
-	public void set_position(Vertex2d position) {
+	public void set_position(Vertex3d position) {
 		transformation
-				.setcoords(position.x, position.y, position.u, position.v);
+				.setcoords(position.x, position.y,position.z, position.u, position.v);
 
 	}
 
