@@ -132,17 +132,17 @@ public class Binder {
 		data[0].clear();
 		data[1].clear();
 	}
-	public void rotate(float radians){
-		Renderable.r
+	public void rotate(Vertex3d rotation){
+		Renderable.rotate(rotation.x,rotation.y,rotation.z);
 	}
-	public void set_rotation_centre(){
-		
+	public void set_rotation_centre(Vertex3d position){
+		Renderable.set_rotation_point(position);
 	}
 	public void translate(Vertex2d translation){
-		
+		Renderable.set_position(new Vertex3d(translation.x,translation.y,1));
 	}
 	public void translate(Vertex3d translation){
-		
+		Renderable.set_position(translation);
 	}
 
 }
