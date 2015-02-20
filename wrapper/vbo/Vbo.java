@@ -37,6 +37,7 @@ public class Vbo {
 	private Vertex3d transformation;
 	private FloatBuffer vertex, texture;
 	private Shader shader;
+	private float rotation = 0f;
 	private Vertex3d rotate_centre = new Vertex3d(0,0,1);
 	private int width, height;// use these for calculating rotation , convert
 								// the point to pixel coordinate then rotate
@@ -44,7 +45,7 @@ public class Vbo {
 	private boolean tick = true;
 
 	private int maxlength = 0;
-	private int vertexattrib, textureattrib;
+	private int vertexattrib, textureattrib , rotationcentreuniform, rotationangleuniform;
 
 	public Vbo(int width, int height, Shader shader) {
 		transformation = new Vertex3d(0, 0, 1);
@@ -58,6 +59,11 @@ public class Vbo {
 		vertexattrib = GL20.glGetAttribLocation(shader.programID, "vertex");
 		textureattrib = GL20.glGetAttribLocation(shader.programID,
 				"texturecoordinate");
+		rotationcentreuniform = GL20.glGetUniformLocation(shader.programID,"rotation_centre");
+		rotationangleuniform = GL20.glGetUniformLocation(shader.programID, "rotation_angle");
+	}
+	public void set_shader(Shader s){
+		this.shader = s;
 	}
 
 	public void create(Vertex2d[] coordinates) {
@@ -232,6 +238,7 @@ public class Vbo {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texcoordid);
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, texture);
 		vertcount = 0;
+		
 
 	}
 
@@ -289,6 +296,9 @@ public class Vbo {
 	}
 	public void set_rotation_point(Vertex3d point){
 		rotate_centre = point;
+	}
+	public void rotate(float angle){
+		this.rotation = angle;
 	}
 
 
