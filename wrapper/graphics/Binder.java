@@ -17,6 +17,49 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package wrapper.graphics;
 
+import wrapper.utilitys.ProgressiveBuffer;
+import wrapper.utilitys.Vertex2d;
+import wrapper.utilitys.Vertex3d;
+
 public class Binder {
+	private boolean update = false;
+	public Binder(){
+		
+	}
+	public void clear(){
+		
+	}
+	public void bind_vertices(Vertex2d data){
+		
+	}
+	public void bind_vertices(Vertex3d data){
+		
+	}
+	public void bind_vertices(ProgressiveBuffer[] data){
+		
+	}
+	public void render(){
+		if(update){
+			update();
+		}
+	}
+	public void update(){
+		
+	}
+	public void cleanup(){
+		
+	}
+	public void rotate(){
+		
+	}
+	public void set_rotation_centre(){
+		
+	}
+	public void translate(Vertex2d translation){
+		
+	}
+	public void translate(Vertex3d translation){
+		
+	}
 
 }

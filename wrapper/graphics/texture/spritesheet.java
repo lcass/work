@@ -39,10 +39,5 @@ public class spritesheet {
 	public Texture gettexture(){
 		return tex;
 	}
-	public void bind(){
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.id);
-	}
-	public void unbind(){
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-	}
+
 }
