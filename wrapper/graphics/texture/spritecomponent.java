@@ -18,6 +18,32 @@
 package wrapper.graphics.texture;
 
 public class spritecomponent {
+	public spritecomponent(){
+		
+	}
+	/**
+	 * Initialize a new sprite component, usually handled automatically
+	 * @param x X position
+	 * @param y Y position
+	 * @param ex End X position
+	 * @param ey End Y position
+	 * @param t Texture object
+	 */
+	public spritecomponent(float x, float y , float ex , float ey , Texture t){
+		this.x = x;
+		this.y = y;
+		this.ex = ex;
+		this.ey = ey;
+		this.t = t;
+	}
+	/**
+	 * Modify the current data
+	 * @param x X position
+	 * @param y Y position
+	 * @param ex End X position
+	 * @param ey End Y postion
+	 * @param t Texture object
+	 */
 	public void set(float x, float y, float ex, float ey,Texture t){
 		this.x = x;
 		this.y = y;

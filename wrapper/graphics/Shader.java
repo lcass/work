@@ -42,13 +42,18 @@ public class Shader {
     int vertexShaderID;
     int fragmentShaderID;
     int geometryShaderID = -1;
-  
+    /**
+     * Set the shader up
+     */
     public Shader()
     {
         programID = glCreateProgram();
     }
     
-   
+    /**
+     * Bind a new Vertex Shader to the program
+     * @param name The location of the vertex shader
+     */
     public void attachVertexShader(String name)
     {
         String vertexShaderSource = FileBuilder.gettext(name);
@@ -63,7 +68,10 @@ public class Shader {
         }
         glAttachShader(programID, vertexShaderID);
     }
-  
+    /**
+     * Bind a new Fragment Shader to the program.
+     * @param name The location of the fragment shader
+     */
     public void attachFragmentShader(String name)
     {
         String fragmentShaderSource = FileBuilder.gettext(name);
@@ -77,6 +85,10 @@ public class Shader {
         }
         glAttachShader(programID, fragmentShaderID);
     }
+    /**
+     * Bind a new Geometry Shader to the program.
+     * @param name The location of the Geometry shader
+     */
     public void attachGeometryShader(String name)
     {
        
@@ -96,7 +108,9 @@ public class Shader {
         glAttachShader(programID, geometryShaderID);
     }
     
- 
+    /** 
+     * Link the shader program to the GPU , must be done before attaching to a Vbo
+     */
     public void link()
     {
         glLinkProgram(programID);
@@ -107,17 +121,23 @@ public class Shader {
            
         }
     }
-  
+    /**
+     * Bind the current program to the gpu
+     */
     public void bind()
     {
         glUseProgram(programID);
     }
-
+    /**
+     * Unbind the current program from the gpu
+     */
     public static void unbind()
     {
         glUseProgram(0);
     }
-
+    /**
+     * Destroy the shader and dispose of all current data of it. Must be called on program exit.
+     */
     public void dispose()
     {
         unbind();

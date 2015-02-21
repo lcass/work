@@ -22,6 +22,10 @@ import org.lwjgl.opengl.GL11;
 public class spritesheet {
 	private Texture tex;
 	private float x,y,ex,ey,width,height;
+	/**
+	 * Create a new spritesheet
+	 * @param location The current location of the sprite
+	 */
 	public spritesheet(String location){
 		tex = Texture.loadTexture(location);
 		this.width = tex.width;

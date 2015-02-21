@@ -16,7 +16,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package wrapper.utilitys;
-
+/**
+ * Similar to Vertex2d , see documenation for that
+ * @author Lucas Spencer
+ *
+ */
 public class Vertex3d {
 	public float x,y,z,u,v;
 	public Vertex3d(float x, float y,float z){

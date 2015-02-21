@@ -28,7 +28,12 @@ public class ProgressiveBuffer {
 	private int setsize = 0;
 	private int limit = 0;
 	public boolean threed = false;
-
+	/**
+	 * Create a new progressivebuffer
+	 * @param data The data to start the buffer , if null the buffer will be initialized empty
+	 * @param texturised Is this a texture object , if it is in position [1] then it is.
+	 * @param threed Is this a 3d progressive buffer , False if this is a texture object
+	 */
 	public ProgressiveBuffer(Vertex2d[] data, boolean texturised, boolean threed) {
 		this.texturised = texturised;
 		this.threed = threed;
@@ -59,7 +64,12 @@ public class ProgressiveBuffer {
 		}
 
 	}
-
+	/**
+	 * Create a new progressivebuffer
+	 * @param data The data to start the buffer , if null the buffer will be initialized empty
+	 * @param texturised Is this a texture object , if it is in position [1] then it is.
+	 * @param threed Is this a 3d progressive buffer , False if this is a texture object
+	 */
 	public ProgressiveBuffer(Vertex3d[] data, boolean texturised, boolean threed) {
 		this.texturised = texturised;
 		this.threed = threed;
@@ -94,7 +104,12 @@ public class ProgressiveBuffer {
 		}
 
 	}
-
+	/**
+	 * Create a new progressivebuffer
+	 * @param data The data to start the buffer , if null the buffer will be initialized empty
+	 * @param texturised Is this a texture object , if it is in position [1] then it is.
+	 * @param threed Is this a 3d progressive buffer , False if this is a texture object
+	 */
 	public void create(Vertex2d[] data, boolean texturised) {
 		if (threed && !texturised) {
 			System.out.println("This is a 3d progressive buffer!");
@@ -117,7 +132,12 @@ public class ProgressiveBuffer {
 			}
 		}
 	}
-
+	/**
+	 * Create a new progressivebuffer
+	 * @param data The data to start the buffer , if null the buffer will be initialized empty
+	 * @param texturised Is this a texture object , if it is in position [1] then it is.
+	 * @param threed Is this a 3d progressive buffer , False if this is a texture object
+	 */
 	public void create(Vertex3d[] data, boolean texturised) {
 		if (!threed && !texturised) {
 			System.out.println("This is a 2d progressive_buffer!");
@@ -142,7 +162,10 @@ public class ProgressiveBuffer {
 			}
 		}
 	}
-
+	/**
+	 * Extend the current ProgressiveBuffer by appending the data to the end
+	 * @param data Data in the form Vertex2d to be appended to the end
+	 */
 	public void extend(Vertex2d[] data) {
 		if (threed) {
 			System.out.println("This is a 3d progressive_buffer!");
@@ -173,7 +196,10 @@ public class ProgressiveBuffer {
 		this.data.put(currtemp);
 		this.data.rewind();
 	}
-
+	/**
+	 * Extend the current progressive buffer with the data.
+	 * @param data The Vertex3d[] data to append to the buffer.
+	 */
 	public void extend(Vertex3d[] data) {
 		if (!threed) {
 			System.out.println("This is a 2d progressive_buffer!");
@@ -211,7 +237,10 @@ public class ProgressiveBuffer {
 		this.data.put(currtemp);
 		this.data.rewind();
 	}
-
+	/**
+	 * Extend the current progressive buffer.
+	 * @param indata ProgressiveBuffer to append to the end of the current data
+	 */
 	public void extend(ProgressiveBuffer indata) {
 
 		if (!indata.threed || indata.texturised) {
@@ -286,16 +315,25 @@ public class ProgressiveBuffer {
 			temp = null;
 		}
 	}
-
+	/**
+	 * Obtain the FloatBuffer
+	 * @return Returns the actual FloatBuffer
+	 */
 	public FloatBuffer get_data() {
 
 		return data;
 	}
-
+	/**
+	 * Reset the current position of the FloatBuffer to 0
+	 */
 	public void rewind() {
 		data.rewind();
 	}
-
+	/**
+	 * Place data at a specific position in the progressive_Buffer
+	 * @param index This is the offset of the data from the beggining of the buffer 
+	 * @param indata This is the data to be added to the buffer, overwrites already stored data in the positions.
+	 */
 	public void index_put(int index, ProgressiveBuffer indata) {
 		if (indata.threed && !threed) {
 			System.out.println("This is a 2d progressive_buffer!");
@@ -312,7 +350,9 @@ public class ProgressiveBuffer {
 			this.data.put(index + i, temp.get());
 		}
 	}
-
+	/**
+	 * Clear the buffer and reset the limit and positions.
+	 */
 	public void clear() {
 		setsize = 0;
 		limit = 0;
@@ -326,7 +366,10 @@ public class ProgressiveBuffer {
 
 		texturised = false;
 	}
-
+	/**
+	 * Returns the limit of the buffer
+	 * @return Returns the limit of the buffer.
+	 */
 	public int get_limit() {
 		return limit;
 	}

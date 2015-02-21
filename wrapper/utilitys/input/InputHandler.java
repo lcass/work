@@ -21,16 +21,26 @@ public class InputHandler {
 
 	private int height = 0;
 	private Vertex2d mouseposition = new Vertex2d(0, 0);
-
+	/**
+	 * Create a new input hanlder
+	 * @param width Screen width
+	 * @param height Screen height
+	 * They calculate mouse coordiantes
+	 */
 	public InputHandler(int width, int height) {
 		this.height = height;
 	}
-
+	/**
+	 * Return current mouse position
+	 * @return Returns current mouse position
+	 */
 	public Vertex2d obtain_mouse() {
 		return mouseposition;
 	}
 
-
+	/**
+	 * Update all current values
+	 */
 	public void tick() {
 
 		mouse = MouseInfo.getPointerInfo();

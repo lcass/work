@@ -22,6 +22,11 @@ import java.io.File;
 import java.io.FileReader;
 
 public class FileBuilder {
+	/**
+	 * Load data from a file in the form of a text document
+	 * @param name Current location of the data
+	 * @return Returns the string of data
+	 */
 	 public static String gettext(String name)
 	    {
 	        StringBuilder source = new StringBuilder();
