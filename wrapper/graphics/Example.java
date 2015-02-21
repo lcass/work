@@ -53,14 +53,14 @@ public class Example {
 	float i = 0;
 	public void start() {
 		while (true) {
-			//i += 0.01f;
+			i -= 0.001f;
 			if (Display.isCloseRequested()) {
 				Display.destroy();
 				break;
 			}
 			Display.update();
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		//binder.translate(new Vertex3d(0,0,i));
+		    binder.translate(new Vertex3d(i/10f,i/10f,i));
 			binder.render();
 
 		}

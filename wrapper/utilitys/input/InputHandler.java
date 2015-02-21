@@ -18,12 +18,11 @@ public class InputHandler {
 
 	private PointerInfo mouse;
 	private Point mousepos;
-	private int width = 0;
+
 	private int height = 0;
 	private Vertex2d mouseposition = new Vertex2d(0, 0);
 
 	public InputHandler(int width, int height) {
-		this.width = width;
 		this.height = height;
 	}
 
@@ -31,7 +30,6 @@ public class InputHandler {
 		return mouseposition;
 	}
 
-	private boolean pressed = false;
 
 	public void tick() {
 
