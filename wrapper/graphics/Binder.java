@@ -17,6 +17,8 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package wrapper.graphics;
 
+import java.nio.FloatBuffer;
+
 import wrapper.utilitys.ProgressiveBuffer;
 import wrapper.utilitys.Vertex2d;
 import wrapper.utilitys.Vertex3d;
@@ -24,7 +26,7 @@ import wrapper.vbo.Vbo;
 
 public class Binder {
 	private boolean update = false;
-	private ProgressiveBuffer[] data;
+	private ProgressiveBuffer[] data = new ProgressiveBuffer[2];
 	private int vbo_size = 12;
 	private Vbo Renderable;
 	public Binder(Shader s,int width, int height,boolean threed){
@@ -71,6 +73,9 @@ public class Binder {
 		}
 		ProgressiveBuffer[] temp = wrapper.utilitys.Utility.to_progressive(data);
 		int position = this.data[0].get_limit();
+		FloatBuffer tempbuff = temp[0].get_data();
+		tempbuff.rewind();
+		
 		this.data[0].extend(temp[0]);
 		this.data[1].extend(temp[1]);
 		return position;
@@ -104,6 +109,7 @@ public class Binder {
 		}
 		int index_2d = ((index + 1) * 3)/2;
 		ProgressiveBuffer[] temp = wrapper.utilitys.Utility.to_progressive(data);
+		
 		this.data[0].index_put(index, temp[0]);
 		this.data[1].index_put(index_2d, temp[1]);
 	}
@@ -120,12 +126,14 @@ public class Binder {
 		if(update){
 			update();
 		}
+		Renderable.render();
 	}
 	public void update(){
 		if(data[0].get_limit() > vbo_size){
 			Renderable.rebind(data[0].get_limit());
 		}
 		Renderable.edit_data(data);
+		update = false;
 	}
 	public void cleanup(){
 		Renderable.dispose();

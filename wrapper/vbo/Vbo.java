@@ -47,10 +47,11 @@ public class Vbo {
 	private boolean tick = true;
 
 	private int maxlength = 0;
-	private int vertexattrib, textureattrib , rotationcentreuniform, rotationuniform;
+	private int vertexattrib, textureattrib , rotationcentreuniform, rotationuniform,transformuniform;
 
 	public Vbo(int width, int height, Shader shader) {
-		transformation = new Vertex3d(0, 0, 1);
+		
+		transformation = new Vertex3d(0, 0, 0);
 		this.shader = shader;
 		if (shader == null) {
 			System.out.println("Null shader , Vbo will encounter errors!");
@@ -59,10 +60,12 @@ public class Vbo {
 		width = (int) temp.x;
 		height = (int) temp.y;
 		vertexattrib = GL20.glGetAttribLocation(shader.programID, "vertex");
+		System.out.println(GL20.glGetAttribLocation(shader.programID, "vertex"));
 		textureattrib = GL20.glGetAttribLocation(shader.programID,
 				"texturecoordinate");
 		rotationcentreuniform = GL20.glGetUniformLocation(shader.programID,"rotation_centre");
 		rotationuniform = GL20.glGetUniformLocation(shader.programID, "rotation");
+		transformuniform = GL20.glGetUniformLocation(shader.programID, "translation");
 	
 	}
 	public void set_shader(Shader s){
@@ -331,22 +334,21 @@ public class Vbo {
 
 	public void render() {
 		if (vertid != -1) {
-
+			
 			shader.bind();
 			GL11.glEnable(GL11.GL_BLEND);
-
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texid);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
 			GL20.glEnableVertexAttribArray(vertexattrib);
 			GL20.glEnableVertexAttribArray(textureattrib);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertid);
-			GL20.glVertexAttribPointer(vertexattrib, 2, GL11.GL_FLOAT, false,
+			GL20.glVertexAttribPointer(vertexattrib, 3, GL11.GL_FLOAT, false,
 					0, 0);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texcoordid);
 			GL20.glVertexAttribPointer(textureattrib, 2, GL11.GL_FLOAT, false,
 					0, 0);
 			GL20.glUniform3f(rotationuniform,rotation_x,rotation_y,rotation_z);
-
+			GL20.glUniform3f(transformuniform, transformation.x, transformation.y, transformation.z);
 			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertcount);
 
 			GL20.glDisableVertexAttribArray(vertexattrib);
